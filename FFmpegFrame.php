@@ -4,13 +4,12 @@
 * 
 * @author char0n (Vladimir Gorej)
 * @package FFmpegPHP
-* @license GNU GPL
-* @version 1.0b2
+* @license New BSD
+* @version 1.0b3
 */
 class FFmpegFrame implements Serializable {
     
     protected static $EX_CODE_NO_VALID_RESOURCE = 334563;
-    protected static $JPEG_QUALITY              = 80;
     
     /**
     * GdImage resource
@@ -148,7 +147,7 @@ class FFmpegFrame implements Serializable {
     
     public function serialize() {
         ob_start();
-        imagejpeg($this->gdImage, null, self::$JPEG_QUALITY);
+        imagegd2($this->gdImage);
         $image = base64_encode(ob_get_clean());
         $data  = array(
             $image,

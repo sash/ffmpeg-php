@@ -5,11 +5,11 @@
 * @author char0n (Vladimir Gorej)
 * @package FFmpegPHP
 * @license New BSD
-* @version 1.0rc1
+* @version 1.0rc3
 */
 class FFmpegMovie implements Serializable {
 
-    protected statiC $EX_CODE_NO_FFMPEG      = 334560;
+    protected static $EX_CODE_NO_FFMPEG      = 334560;
     protected static $EX_CODE_FILE_NOT_FOUND = 334561;
     protected static $EX_CODE_UNKNOWN_FORMAT = 334562;
     
@@ -612,7 +612,7 @@ class FFmpegMovie implements Serializable {
     * @return boolean 
     */
     public function hasVideo() {
-        return ($this->getVideoBitRate() === null) ? false : true;
+        return (boolean) $this->getVideoBitRate();
     }
     
     /**
@@ -624,7 +624,8 @@ class FFmpegMovie implements Serializable {
     * @return FFmpegFrame|boolean
     */
     public function getFrame($framenumber = null) {
-        $framePos = ($framenumber === null) ? $this->frameNumber : $framenumber;    
+        // Set frame position for frame extraction
+        $framePos = ($framenumber === null) ? ($this->frameNumber + 1) : ((int) $framenumber);    
         
         // Frame position out of range
         if (!is_numeric($framePos) || $framePos < 0 || $framePos > $this->getFrameCount()) {
@@ -640,8 +641,14 @@ class FFmpegMovie implements Serializable {
             return false;
         }
         
+        // Create gdimage and delete temporary image
         $gdImage = imagecreatefromjpeg($frameFilePath);
         if (is_writable($frameFilePath)) unlink($frameFilePath);        
+        
+        // Increment internal frame number
+        if ($framenumber === null) {
+            ++$this->frameNumber;
+        }
         
         return new FFmpegFrame($gdImage, $frameTime);
     }

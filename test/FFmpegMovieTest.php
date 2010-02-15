@@ -19,13 +19,22 @@ require_once '../FFmpegAnimatedGif.php';
 
 class FFmpegMovieTest extends PHPUnit_Framework_TestCase {
 
-    protected static $movie;
+    protected static $moviePath;
+    protected static $movie;              
+    
     protected static $audio;
+    protected static $audioPath;
+    
+    protected static $noMediaPath;
     
     public static function setUpBeforeClass() {
-        self::$movie = new FFmpegMovie('data/test.mp4');
-        self::$audio = new FFmpegMovie('data/test.wav');
-    }    
+        self::$moviePath   = 'data/test.mp4';
+        self::$audioPath   = 'data/test.wav';
+        self::$noMediaPath = 'data/test1.txt';
+        
+        self::$movie     = new FFmpegMovie(self::$moviePath);
+        self::$audio     = new FFmpegMovie(self::$audioPath);
+    }   
     
     public function testFileDoesNotExistException() {
         try {
@@ -43,7 +52,7 @@ class FFmpegMovieTest extends PHPUnit_Framework_TestCase {
     
     public function testFileIsNotVideoFileException() {
         try {
-            $movie = new FFmpegMovie('data/test1.txt');            
+            $movie = new FFmpegMovie(self::$noMediaPath);
         } catch (Exception $ex) {
             if ($ex->getCode() == 334562) {
                 return;
@@ -57,15 +66,15 @@ class FFmpegMovieTest extends PHPUnit_Framework_TestCase {
     
     public function testPersistentResourceSimulation() {
         PHPUnit_Util_Timer::start();
-        $movie   = new FFmpegMovie('data/test.mp4', true);
-        $movie   = new FFmpegMovie('data/test.mp4', true);
-        $movie   = new FFmpegMovie('data/test.mp4', true);
+        $movie   = new FFmpegMovie(self::$moviePath, true);
+        $movie   = new FFmpegMovie(self::$moviePath, true);
+        $movie   = new FFmpegMovie(self::$moviePath, true);
         $elapsed = PHPUnit_Util_Timer::stop();
         
         PHPUnit_Util_Timer::start();
-        $movie   = new FFmpegMovie('data/test.mp4');
-        $movie   = new FFmpegMovie('data/test.mp4');
-        $movie   = new FFmpegMovie('data/test.mp4');        
+        $movie   = new FFmpegMovie(self::$moviePath);
+        $movie   = new FFmpegMovie(self::$moviePath);
+        $movie   = new FFmpegMovie(self::$moviePath);
         $elapsed1 = PHPUnit_Util_Timer::stop();
         $this->assertGreaterThan($elapsed, $elapsed1, 'Persistent resource simulation should be faster');
     }
@@ -191,7 +200,7 @@ class FFmpegMovieTest extends PHPUnit_Framework_TestCase {
         
         $this->assertType('FFmpegFrame', self::$movie->getNextKeyFrame());
         $this->assertType('int', self::$movie->getFrameNumber(), 'Frame number is of integer type');
-        $this->assertEquals(2, self::$movie->getFrameNumber(), 'Frame number should be int(2)');                
+        $this->assertEquals(2, self::$movie->getFrameNumber(), 'Frame number should be int(2)');       
     }      
     
     public function testGetVideoCodec() {
@@ -227,19 +236,26 @@ class FFmpegMovieTest extends PHPUnit_Framework_TestCase {
     public function testHasVideo() {
         $this->assertType('boolean', self::$movie->hasVideo(), 'HasVideo is of boolean type');
         $this->assertEquals(true, self::$movie->hasVideo(), 'HasVideo is of should be boolean(true)');
-    }      
+    }     
+    
+    public function testHasVideo_Audio() {
+        $this->assertType('boolean', self::$audio->hasVideo(), 'HasVideo of audio file is of boolean type');
+        $this->assertEquals(false, self::$audio->hasVideo(), 'HasVideo of audio file is of should be boolean(false)');    
+    } 
     
     public function testGetFrame() {
         $this->assertType('FFmpegFrame', self::$movie->getFrame(), 'Frame is of FFmpegFrame type');
-    }      
-    
-    public function testGetFrame1() {
-        $this->assertType('FFmpegFrame', self::$movie->getFrame(1), 'Frame is of FFmpegFrame type');
+        $this->assertEquals(3, self::$movie->getFrameNumber(), 'Frame number should be int(3)');
+        
+        $this->assertType('FFmpegFrame', self::$movie->getFrame(25), 'Frame is of FFmpegFrame type');
+        
+        $this->assertType('FFmpegFrame', self::$movie->getFrame(), 'Frame is of FFmpegFrame type');
+        $this->assertEquals(4, self::$movie->getFrameNumber(), 'Frame number should be int(4)');        
     }      
     
     public function testGetNextKeyFrame() {
         $this->assertType('FFmpegFrame', self::$movie->getNextKeyFrame(), 'Next key frame is of FFmpegFrame type');
-        $this->assertEquals(3, self::$movie->getFrameNumber(), 'Frame number should be int(3)');
+        $this->assertEquals(5, self::$movie->getFrameNumber(), 'Frame number should be int(5)');
     }      
     
     public function testSerializeUnserialize() {
@@ -251,8 +267,10 @@ class FFmpegMovieTest extends PHPUnit_Framework_TestCase {
     }
     
     public static function tearDownAfterClass() {
-        self::$movie = null;
-        self::$audio = null;
+        self::$movie       = null;
+        self::$audio       = null;
+        self::$audioPath   = null;    
+        self::$noMediaPath = null;            
     }    
 }  
 ?>

@@ -5,7 +5,7 @@
 * @author char0n (Vladimir Gorej)
 * @package FFmpegPHP
 * @license New BSD
-* @version 1.0rc3
+* @version 1.1
 */
 class FFmpegFrame implements Serializable {
     
@@ -152,8 +152,7 @@ class FFmpegFrame implements Serializable {
         $data  = array(
             $image,
             $this->pts
-        );        
-        imagedestroy($this->gdImage);
+        );                
         
         return serialize($data);
     }

@@ -11,7 +11,7 @@
 * @author char0n (Vladimir Gorej)
 * @package FFmpegPHP
 * @license New BSD 
-* @version 1.1
+* @version 1.5-b1
 */
 class FFmpegAnimatedGif implements Serializable {
 
@@ -81,7 +81,7 @@ class FFmpegAnimatedGif implements Serializable {
         $this->frameRate   = $frameRate;
         $this->loopCount   = ($loopCount < -1) ? 0 : $loopCount;
         $this->frames      = array();
-        $this->counter     = -1;        
+        $this->counter     = -1;
     }
     
     /**
@@ -240,7 +240,7 @@ class FFmpegAnimatedGif implements Serializable {
     public function save() {
         // No images to proces
         if (count($this->frames) == 0) return false;
-        
+                               
         return (boolean) file_put_contents($this->outFilePath, $this->getAnimation(), LOCK_EX);
     } 
     
@@ -289,16 +289,5 @@ class FFmpegAnimatedGif implements Serializable {
             $this->counter
         ) = $data;
     }
-    
-    public function __destruct() {
-        $this->outFilePath = null;
-        $this->width       = null;
-        $this->height      = null;
-        $this->frameRate   = null;
-        $this->loopCount   = null;
-        $this->gifData     = null;
-        $this->frames      = null;
-        $this->counter     = null;
-    }    
 }
 ?>

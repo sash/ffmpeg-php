@@ -5,7 +5,7 @@
 * @author char0n (Vladimir Gorej)
 * @package FFmpegPHP
 * @license New BSD
-* @version 1.1
+* @version 1.5-b1
 */
 class FFmpegMovie implements Serializable {
 
@@ -650,7 +650,10 @@ class FFmpegMovie implements Serializable {
             ++$this->frameNumber;
         }
         
-        return new FFmpegFrame($gdImage, $frameTime);
+        $frame = new FFmpegFrame($gdImage, $frameTime);
+        imagedestroy($gdImage);
+        
+        return $frame;
     }
     
     /**
@@ -680,34 +683,6 @@ class FFmpegMovie implements Serializable {
              $this->persistent
         ) = unserialize($serialized);
         
-    }
-    
-    public function __destruct() {
-        $this->movieFile       = null;
-        $this->persistent      = null;
-        $this->ffmpegOut       = null;
-    
-        $this->duration        = null;
-        $this->frameCount      = null;
-        $this->frameRate       = null;
-        $this->comment         = null;
-        $this->title           = null;
-        $this->artist          = null;
-        $this->copyright       = null;
-        $this->genre           = null;
-        $this->trackNumber     = null;
-        $this->year            = null;
-        $this->frameHeight     = null;
-        $this->frameWidth      = null;
-        $this->pixelFormat     = null;
-        $this->bitRate         = null;
-        $this->videoBitRate    = null;
-        $this->audioBitRate    = null;
-        $this->audioSampleRate = null;
-        $this->frameNumber     = null;
-        $this->videoCodec      = null;
-        $this->audioCodec      = null;
-        $this->audioChannels   = null;
     }
 }  
 ?>
